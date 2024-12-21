@@ -1,0 +1,78 @@
+.container-page {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4%;
+  background-color: var(--background-color);
+}
+
+h5 {
+  display: flex;
+  align-items: center;
+  color: var(--color);
+  font-size: 1.2em;
+  font-weight: 300;
+}
+
+.h5 {
+  display: flex;
+}
+
+.material-symbols-outlined {
+  cursor: pointer;
+}
+
+table {
+  border-collapse: collapse;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.th {
+  text-align: center;
+  padding: 10px;
+  overflow: hidden;
+  font-size: 0.8em;
+  font-weight: 400;
+}
+
+.td {
+  text-align: center;
+  padding: 10px;
+  overflow: hidden;
+}
+
+td.today {
+  background-color: red;
+  color: var(--description-color);
+  transition: background-color 0.3s ease-in-out;
+}
+
+td.today:hover {
+  background-color: red;
+  opacity: 0.9;
+  cursor: pointer;
+}
+
+td:hover {
+  background-color: gray;
+  transition: font-size 0.3s ease-in;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.material-symbols-outlined:hover {
+  transition: font-size 0.3s ease-in;
+}
+
+.other-month {
+  opacity: 0.5;
+  text-align: center;
+  padding: 10px;
+}
+
+.highlighted-day {
+  background-color: lightgray;
+}
