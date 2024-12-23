@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,7 +11,7 @@ import { FiscalYearService } from '../../services/fiscal-year.service';
   imports: [CommonModule, MatMenuModule, MatButtonModule],
   template: `
     <button mat-button [matMenuTriggerFor]="menu">
-      Выбрать квартал для проверки
+      {{ selectedGroup?.name || 'Выбрать квартал для проверки' }}
     </button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item *ngFor="let group of monthGroups" 
@@ -26,15 +26,28 @@ import { FiscalYearService } from '../../services/fiscal-year.service';
     }
   `]
 })
-export class MonthSelectorComponent {
+export class MonthSelectorComponent implements OnInit {
   @Output() monthGroupSelected = new EventEmitter<MonthGroup>();
   monthGroups: MonthGroup[];
+  selectedGroup: MonthGroup | null = null;
 
   constructor(private fiscalYearService: FiscalYearService) {
     this.monthGroups = this.fiscalYearService.getQuarterGroups();
   }
 
+  ngOnInit() {
+    const currentMonth = new Date().getMonth();
+    const currentQuarter = this.monthGroups.find(group => 
+      group.months.includes(currentMonth)
+    );
+    
+    if (currentQuarter) {
+      this.selectMonthGroup(currentQuarter);
+    }
+  }
+
   selectMonthGroup(group: MonthGroup) {
+    this.selectedGroup = group;
     this.monthGroupSelected.emit(group);
   }
 }

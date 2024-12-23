@@ -8,15 +8,17 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, MatCheckboxModule, FormsModule],
   template: `
-    <div class="checkboxes" [ngClass]="statusClass">
+    <div class="checkboxes">
       <mat-checkbox [(ngModel)]="hasOriginal" 
                    (ngModelChange)="updateStatus()"
-                   color="primary">
+                   [class.incomplete]="hasOriginal && !hasCopy"
+                   [class.complete]="hasOriginal && hasCopy">
         Оригинал
       </mat-checkbox>
       <mat-checkbox [(ngModel)]="hasCopy" 
                    (ngModelChange)="updateStatus()"
-                   color="primary">
+                   [class.incomplete]="hasCopy && !hasOriginal"
+                   [class.complete]="hasOriginal && hasCopy">
         Копия
       </mat-checkbox>
     </div>
@@ -25,15 +27,28 @@ import { FormsModule } from '@angular/forms';
     .checkboxes {
       display: flex;
       gap: 16px;
-      padding: 8px;
-      border-radius: 4px;
-      transition: background-color 0.3s ease;
     }
-    .incomplete {
-      background-color: rgba(244, 67, 54, 0.1);
-    }
-    .complete {
-      background-color: rgba(76, 175, 80, 0.1);
+    
+    ::ng-deep {
+      .mat-mdc-checkbox.incomplete .mdc-checkbox .mdc-checkbox__background {
+        border-color: var(--error-color) !important;
+        background-color: var(--error-color) !important;
+      }
+      
+      .mat-mdc-checkbox.complete .mdc-checkbox .mdc-checkbox__background {
+        border-color: var(--success-color) !important;
+        background-color: var(--success-color) !important;
+      }
+      
+      .mat-mdc-checkbox.incomplete .mdc-form-field,
+      .mat-mdc-checkbox.incomplete .mdc-checkbox__ripple {
+        color: var(--error-color);
+      }
+      
+      .mat-mdc-checkbox.complete .mdc-form-field,
+      .mat-mdc-checkbox.complete .mdc-checkbox__ripple {
+        color: var(--success-color);
+      }
     }
   `]
 })
@@ -42,11 +57,6 @@ export class ReceiptStatusComponent {
   @Input() hasCopy = false;
   @Output() originalChange = new EventEmitter<boolean>();
   @Output() copyChange = new EventEmitter<boolean>();
-
-  get statusClass(): string {
-    if (!this.hasOriginal && !this.hasCopy) return '';
-    return (this.hasOriginal && this.hasCopy) ? 'complete' : 'incomplete';
-  }
 
   updateStatus() {
     this.originalChange.emit(this.hasOriginal);
