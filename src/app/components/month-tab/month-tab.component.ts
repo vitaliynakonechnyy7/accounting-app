@@ -23,8 +23,8 @@ import { ReceiptStatusComponent } from '../receipt-status/receipt-status.compone
     <div class="month-container">
       <div class="donations-grid">
         <div class="donation-column">
-          <h3>Среда</h3>
-          <div *ngFor="let day of wednesdayDonations; let i = index" 
+          <h3>Четверг</h3>
+          <div *ngFor="let day of thursdayDonations; let i = index" 
                class="donation-row"
                [class.alternate]="i % 2 === 0">
             <span class="date">{{day.date | date:'mediumDate'}}</span>
@@ -150,7 +150,7 @@ export class MonthTabComponent implements OnInit {
   };
 
   additionalExpense: number | null = null;
-  wednesdayDonations: DonationDay[] = [];
+  thursdayDonations: DonationDay[] = [];
   sundayDonations: DonationDay[] = [];
 
   constructor(
@@ -168,8 +168,10 @@ export class MonthTabComponent implements OnInit {
           date: new Date(d.date)
         }))
       };
+      this.syncDonationDates();
+      this.saveData();
     } else {
-      const dates = this.dateService.getWednesdaysAndSundays(this.year, this.month);
+      const dates = this.dateService.getThursdaysAndSundays(this.year, this.month);
       this.monthData.donations = dates.map(date => ({
         date,
         amount: 0,
@@ -178,12 +180,48 @@ export class MonthTabComponent implements OnInit {
       }));
     }
 
-    this.wednesdayDonations = this.monthData.donations.filter(
-      day => day.date.getDay() === 3
+    this.thursdayDonations = this.monthData.donations.filter(
+      day => day.date.getDay() === 4
     );
     this.sundayDonations = this.monthData.donations.filter(
       day => day.date.getDay() === 0
     );
+  }
+
+  private syncDonationDates() {
+    const savedDonations = this.monthData.donations;
+    const savedByDate = new Map(savedDonations.map(day => [this.getDateKey(day.date), day]));
+    const targetDates = this.dateService.getThursdaysAndSundays(this.year, this.month);
+
+    this.monthData.donations = targetDates.map(date => {
+      const savedForDate = savedByDate.get(this.getDateKey(date));
+      if (savedForDate) {
+        return savedForDate;
+      }
+
+      const previousDate = new Date(date);
+      previousDate.setDate(previousDate.getDate() - 1);
+      const savedFromWednesday = date.getDay() === 4
+        ? savedByDate.get(this.getDateKey(previousDate))
+        : undefined;
+
+      return savedFromWednesday
+        ? { ...savedFromWednesday, date }
+        : {
+            date,
+            amount: 0,
+            hasOriginal: false,
+            hasCopy: false
+          };
+    });
+  }
+
+  private getDateKey(date: Date): string {
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, '0'),
+      String(date.getDate()).padStart(2, '0')
+    ].join('-');
   }
 
   private saveData() {

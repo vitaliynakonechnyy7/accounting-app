@@ -4,13 +4,13 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class DateService {
-  getWednesdaysAndSundays(year: number, month: number): Date[] {
+  getThursdaysAndSundays(year: number, month: number): Date[] {
     const dates: Date[] = [];
     const date = new Date(year, month, 1);
     
     while (date.getMonth() === month) {
       const day = date.getDay();
-      if (day === 0 || day === 3) { // 0 is Sunday, 3 is Wednesday
+      if (day === 0 || day === 4) { // 0 is Sunday, 4 is Thursday
         dates.push(new Date(date));
       }
       date.setDate(date.getDate() + 1);

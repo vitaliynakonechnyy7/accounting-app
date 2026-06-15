@@ -25,7 +25,7 @@ import { Day, Week } from '../../models/calendar.model';
               [ngClass]="{
                 'td': !day.isOtherMonth,
                 'other-month': day.isOtherMonth,
-                'highlighted-day': isWednesdayOrSunday(day)
+                'highlighted-day': isThursdayOrSunday(day)
               }" 
               *ngFor="let day of week.days"
               [class.today]="day.isToday">
@@ -118,9 +118,9 @@ export class CalendarComponent {
     this.generateCalendar();
   }
 
-  isWednesdayOrSunday(day: Day): boolean {
+  isThursdayOrSunday(day: Day): boolean {
     const date = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), day.number);
     const dayOfWeek = date.getDay();
-    return day.isCurrentMonth && (dayOfWeek === 3 || dayOfWeek === 0);
+    return day.isCurrentMonth && (dayOfWeek === 4 || dayOfWeek === 0);
   }
 }
